@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "com.example.ftbqspacing.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "ViewQuestPanelMixin",
+    "ChapterPanelMixin",
+    "ChapterButtonMixin",
+    "ChapterButtonAccessor",
+    "ChapterGroupButtonMixin",
+    "QuestScreenAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "ftbq_linespacing.refmap.json"
+}

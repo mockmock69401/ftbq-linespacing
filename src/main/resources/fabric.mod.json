@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "ftbq_linespacing",
+  "version": "${version}",
+  "name": "FTB Quests Line Spacing",
+  "description": "Improves FTB Quests readability: adjustable line spacing in quest descriptions, and a card-style chapter list with completion percentages. Configurable via config/ftbq-linespacing.properties.",
+  "authors": [],
+  "license": "MIT",
+  "environment": "client",
+  "mixins": [
+    "ftbq_linespacing.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.21",
+    "minecraft": "1.20.1",
+    "ftbquests": "*",
+    "ftblibrary": "*"
+  }
+}
