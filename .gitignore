@@ -1,6 +1,8 @@
 # Gradle
 .gradle/
 build/
+gradlew.bat
+gradlew
 
 # Loom / Fabric dev
 run/
