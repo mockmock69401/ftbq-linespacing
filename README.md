@@ -1,4 +1,4 @@
-# FTB Quests Line Spacing & Chapter Cards (Fabric, MC 1.20.1)
+# FTB Quests Line Spacing & Chapter Cards (Fabric)
 
 FTB Quests(2001.x) UI 가독성 개선 모드입니다.
 
