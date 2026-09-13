@@ -1,8 +1,8 @@
 {
   "required": true,
-  "minVersion": "0.8",
   "package": "io.github.mockmock69401.ftbqlinespacing.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
   "client": [
     "ViewQuestPanelMixin",
     "TextFieldMixin",

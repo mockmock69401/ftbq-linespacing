@@ -1,12 +1,11 @@
-package com.example.ftbqspacing.mixin;
+package io.github.mockmock69401.ftbqlinespacing.mixin;
 
-import com.example.ftbqspacing.SpacingConfig;
+import io.github.mockmock69401.ftbqlinespacing.SpacingConfig;
 import dev.ftb.mods.ftblibrary.icon.Color4I;
 import dev.ftb.mods.ftblibrary.icon.Icon;
 import dev.ftb.mods.ftblibrary.ui.GuiHelper;
 import dev.ftb.mods.ftblibrary.ui.Theme;
 import dev.ftb.mods.ftblibrary.ui.input.MouseButton;
-import dev.ftb.mods.ftbquests.client.ClientQuestFile;
 import dev.ftb.mods.ftbquests.client.gui.quests.ChapterPanel;
 import dev.ftb.mods.ftbquests.client.gui.quests.QuestScreen;
 import dev.ftb.mods.ftbquests.quest.Chapter;
@@ -62,11 +61,26 @@ public abstract class ChapterButtonMixin extends ChapterPanel.ListButton {
     private static final Color4I CLICK_FLASH = Color4I.rgb(0xFFFFFF);
 
     @Unique
+    private static final long PROGRESS_CACHE_NS = 250_000_000L;
+
+    @Unique
     private float ftbqls$hoverAnim;
     @Unique
     private long ftbqls$lastFrameNanos;
     @Unique
     private long ftbqls$clickNanos;
+
+    // getRelativeProgress() walks all quests/tasks in the chapter and FTBQ doesn't
+    // cache it itself, so re-use the last result until the TeamData instance changes
+    // or PROGRESS_CACHE_NS has elapsed, instead of recomputing every frame.
+    @Unique
+    private TeamData ftbqls$cachedTeamData;
+    @Unique
+    private long ftbqls$progressCacheNanos;
+    @Unique
+    private int ftbqls$cachedProgress;
+    @Unique
+    private String ftbqls$cachedProgressText = "";
 
     protected ChapterButtonMixin(ChapterPanel panel, Component title, Icon icon) {
         super(panel, title, icon);
@@ -85,6 +99,19 @@ public abstract class ChapterButtonMixin extends ChapterPanel.ListButton {
     @Unique
     private static float ftbqls$smoothstep(float t) {
         return t * t * (3f - 2f * t);
+    }
+
+    /** Cached {@code data.getRelativeProgress(chapter)}, recomputed only when the
+     *  TeamData instance changes or {@link #PROGRESS_CACHE_NS} has elapsed. */
+    @Unique
+    private int ftbqls$progress(TeamData data, long now) {
+        if (ftbqls$cachedTeamData != data || now - ftbqls$progressCacheNanos >= PROGRESS_CACHE_NS) {
+            ftbqls$cachedTeamData = data;
+            ftbqls$progressCacheNanos = now;
+            ftbqls$cachedProgress = data.getRelativeProgress(chapter);
+            ftbqls$cachedProgressText = ftbqls$cachedProgress + " %";
+        }
+        return ftbqls$cachedProgress;
     }
 
     @Inject(method = "onClicked", at = @At("HEAD"))
@@ -125,15 +152,16 @@ public abstract class ChapterButtonMixin extends ChapterPanel.ListButton {
         int cy = y;
         int ch = h;
 
-        TeamData data = ClientQuestFile.INSTANCE.selfTeamData;
-        Chapter selected = ((QuestScreenAccessor) getGui()).ftbqls$getSelectedChapter();
+        QuestScreenAccessor screenAccessor = (QuestScreenAccessor) getGui();
+        TeamData data = screenAccessor.ftbqls$getFile().selfTeamData;
+        Chapter selected = screenAccessor.ftbqls$getSelectedChapter();
         boolean isSelected = selected != null && selected.id == chapter.id;
         boolean hover = isMouseOver();
         boolean hasChildren = chapter.hasAnyVisibleChildren();
-        int progress = hasChildren ? data.getRelativeProgress(chapter) : 0;
+        long now = System.nanoTime();
+        int progress = hasChildren ? ftbqls$progress(data, now) : 0;
 
         // advance hover animation (time-based, frame-rate independent)
-        long now = System.nanoTime();
         if (SpacingConfig.TRANSITION_MS <= 0) {
             ftbqls$hoverAnim = hover ? 1f : 0f;
         } else {
@@ -203,7 +231,7 @@ public abstract class ChapterButtonMixin extends ChapterPanel.ListButton {
         if (hasChildren && SpacingConfig.SHOW_PROGRESS) {
             theme.drawString(graphics, title, textX, cy + ch / 2 - 9, titleColor, 0);
             Color4I pctColor = progress >= 100 ? PCT_DONE : PCT_PARTIAL;
-            theme.drawString(graphics, progress + " %", textX, cy + ch / 2 + 1, pctColor, 0);
+            theme.drawString(graphics, ftbqls$cachedProgressText, textX, cy + ch / 2 + 1, pctColor, 0);
         } else {
             theme.drawString(graphics, title, textX, cy + (ch - theme.getFontHeight()) / 2, titleColor, 0);
         }

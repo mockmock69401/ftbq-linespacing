@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.6-SNAPSHOT'
+    id 'fabric-loom' version '1.6.12'
     id 'java'
 }
 
@@ -28,9 +28,13 @@ dependencies {
     // Resolved from CurseMaven (CurseForge files). None of these are bundled into the built jar.
     modCompileOnly "net.fabricmc.fabric-api:fabric-api:0.83.1+1.20.1"
     modCompileOnly "dev.architectury:architectury-fabric:9.1.12"
-    modCompileOnly("curse.maven:ftb-library-fabric-438495:6164052") { transitive = false }  // FTB Library 2001.2.9
+    // FTB Library is capped at 2001.2.11: 2001.2.12+ (incl. latest 2001.2.13) was built by FTBTeam
+    // with Fabric Loom 1.7.435, and Loom refuses to remap a mod dependency built by a newer Loom
+    // than the consumer's (net.fabricmc.loom.configuration.mods.ArtifactMetadata.validateLoomVersion).
+    // Re-verify this cap whenever bumping fabric-loom above (see CLAUDE.md dependency version pins).
+    modCompileOnly("curse.maven:ftb-library-fabric-438495:7293429") { transitive = false }  // FTB Library 2001.2.11
     modCompileOnly("curse.maven:ftb-teams-fabric-438497:7499808") { transitive = false }    // FTB Teams 2001.3.2
-    modCompileOnly("curse.maven:ftb-quests-fabric-438496:6829211") { transitive = false }   // FTB Quests 2001.4.14
+    modCompileOnly("curse.maven:ftb-quests-fabric-438496:8078537") { transitive = false }   // FTB Quests 2001.4.22
 }
 
 processResources {
@@ -47,4 +51,11 @@ tasks.withType(JavaCompile).configureEach {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
+}
+
+loom {
+    mixin {
+        defaultRefmapName = "ftbq_linespacing.refmap.json"
+    }
 }

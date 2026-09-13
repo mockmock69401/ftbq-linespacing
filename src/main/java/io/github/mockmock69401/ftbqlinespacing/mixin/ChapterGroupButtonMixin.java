@@ -1,6 +1,6 @@
-package com.example.ftbqspacing.mixin;
+package io.github.mockmock69401.ftbqlinespacing.mixin;
 
-import com.example.ftbqspacing.SpacingConfig;
+import io.github.mockmock69401.ftbqlinespacing.SpacingConfig;
 import com.mojang.math.Axis;
 import dev.ftb.mods.ftblibrary.icon.Color4I;
 import dev.ftb.mods.ftblibrary.icon.Icon;
@@ -41,7 +41,7 @@ public abstract class ChapterGroupButtonMixin extends ChapterPanel.ListButton {
         super(panel, title, icon);
     }
 
-    @Inject(method = "draw", at = @At("HEAD"), cancellable = true, require = 0)
+    @Inject(method = "draw", at = @At("HEAD"), cancellable = true)
     private void ftbqls$drawAnimated(GuiGraphics graphics, Theme theme, int x, int y, int w, int h, CallbackInfo ci) {
         if (!SpacingConfig.CHAPTER_CARDS) {
             return;

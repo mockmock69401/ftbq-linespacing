@@ -1,4 +1,4 @@
-package com.example.ftbqspacing;
+package io.github.mockmock69401.ftbqlinespacing;
 
 import dev.ftb.mods.ftblibrary.ui.Widget;
 

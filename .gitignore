@@ -1,12 +1,13 @@
 # Gradle
 .gradle/
 build/
-gradlew.bat
-gradlew
 
 # Loom / Fabric dev
 run/
 remappedSrc/
+
+# OMC agent state
+.omc/
 
 # IDE
 .idea/

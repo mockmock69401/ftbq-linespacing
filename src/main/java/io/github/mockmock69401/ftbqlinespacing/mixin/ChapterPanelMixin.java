@@ -1,7 +1,7 @@
-package com.example.ftbqspacing.mixin;
+package io.github.mockmock69401.ftbqlinespacing.mixin;
 
-import com.example.ftbqspacing.SlideAnim;
-import com.example.ftbqspacing.SpacingConfig;
+import io.github.mockmock69401.ftbqlinespacing.SlideAnim;
+import io.github.mockmock69401.ftbqlinespacing.SpacingConfig;
 import dev.ftb.mods.ftblibrary.ui.Panel;
 import dev.ftb.mods.ftblibrary.ui.Theme;
 import dev.ftb.mods.ftblibrary.ui.Widget;

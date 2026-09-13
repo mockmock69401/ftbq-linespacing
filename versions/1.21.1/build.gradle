@@ -1,0 +1,74 @@
+plugins {
+    id 'fabric-loom' version '1.17.20'
+    id 'java'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    maven { url = "https://maven.architectury.dev/" }
+    maven {
+        name = "CurseMaven"
+        url = "https://www.cursemaven.com"
+        content { includeGroup "curse.maven" }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    // Compile-time only: needed so mixins can reference FTB Quests / FTB Library classes.
+    // Resolved from CurseMaven (CurseForge files). None of these are bundled into the built jar.
+    modCompileOnly "net.fabricmc.fabric-api:fabric-api:0.116.1+1.21.1"
+    modCompileOnly "dev.architectury:architectury-fabric:13.0.8"
+    modCompileOnly("curse.maven:ftb-library-fabric-438495:8858847") { transitive = false }  // FTB Library 2101.1.36
+    modCompileOnly("curse.maven:ftb-teams-fabric-438497:8724781") { transitive = false }    // FTB Teams 2101.1.11
+    modCompileOnly("curse.maven:ftb-quests-fabric-438496:8842728") { transitive = false }   // FTB Quests 2101.1.35
+}
+
+// Java sources are shared with the 1.20.1 build at the repo root (every mixin target and
+// ordinal was verified identical in FTB 2101.x — see PORTING.md). Only resources
+// (fabric.mod.json, mixins.json) are version-specific and live under this directory.
+// If a class ever needs a 1.21.1-only change, fork it into src/main/java here and
+// exclude it from the shared dir below.
+sourceSets {
+    main {
+        java {
+            srcDirs = [file("../../src/main/java")]
+        }
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    withSourcesJar()
+}
+
+loom {
+    mixin {
+        useLegacyMixinAp = true
+        defaultRefmapName = "ftbq_linespacing.refmap.json"
+    }
+}

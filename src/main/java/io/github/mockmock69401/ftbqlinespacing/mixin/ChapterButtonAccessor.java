@@ -1,4 +1,4 @@
-package com.example.ftbqspacing.mixin;
+package io.github.mockmock69401.ftbqlinespacing.mixin;
 
 import dev.ftb.mods.ftbquests.client.gui.quests.ChapterPanel;
 import dev.ftb.mods.ftbquests.quest.Chapter;

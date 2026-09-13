@@ -1,10 +1,13 @@
-package com.example.ftbqspacing.mixin;
+package io.github.mockmock69401.ftbqlinespacing.mixin;
 
-import com.example.ftbqspacing.SpacingConfig;
+import io.github.mockmock69401.ftbqlinespacing.RoundedRect;
+import io.github.mockmock69401.ftbqlinespacing.SpacingConfig;
+import io.github.mockmock69401.ftbqlinespacing.WordWrapTarget;
 import dev.ftb.mods.ftblibrary.icon.Icon;
 import dev.ftb.mods.ftblibrary.ui.BlankPanel;
 import dev.ftb.mods.ftblibrary.ui.Button;
 import dev.ftb.mods.ftblibrary.ui.TextField;
+import dev.ftb.mods.ftblibrary.ui.Theme;
 import dev.ftb.mods.ftblibrary.ui.Widget;
 import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,11 +43,16 @@ public abstract class ViewQuestPanelMixin {
 
     /**
      * Description paragraphs (addDescriptionText only). The title/subtitle
-     * setSpacing calls in addWidgets are handled by the redirects below, which
-     * also apply the configured line spacing, so this must not target addWidgets
+     * setSpacing calls in addWidgets are handled by the redirects below (the
+     * subtitle one also applies the configured line spacing), so this must not target addWidgets
      * (a @ModifyArg and a @Redirect cannot share the same invocation).
+     *
+     * <p>This is the last call on the description field before setText, so it also
+     * doubles as the hook that opts the field in to word-level wrapping. Without
+     * it the splitter breaks CJK text between syllables, filling every line to the
+     * panel edge so the paragraph reads as justified rather than flush left.
      */
-    @ModifyArg(
+    @Redirect(
             method = "addDescriptionText",
             at = @At(
                     value = "INVOKE",
@@ -52,13 +60,25 @@ public abstract class ViewQuestPanelMixin {
             ),
             require = 0
     )
-    private int ftbqls$lineSpacing(int spacing) {
-        return SpacingConfig.LINE_SPACING;
+    private TextField ftbqls$lineSpacing(TextField field, int spacing) {
+        if (SpacingConfig.DESC_WORD_WRAP && field instanceof WordWrapTarget target) {
+            target.ftbqls$setWordWrap(true);
+        }
+        return field.setSpacing(SpacingConfig.LINE_SPACING);
     }
 
     /**
-     * Replaces the middle argument of new WidgetLayout.Vertical(0, 1, 2),
-     * which controls the vertical gap between description paragraphs.
+     * Replaces the middle argument of new WidgetLayout.Vertical(0, 1, 2), the gap
+     * between the widgets stacked in the text panel.
+     *
+     * <p>Each description entry is its own TextField, whose height counts its last
+     * line as only {@code fontHeight - 1} px rather than a full line pitch. The
+     * step from one entry to the next is therefore {@code fontHeight - 1 + gap},
+     * while wrapped lines (or {@code \n} inside one entry) step by the line spacing.
+     * Vanilla's gap of 1 makes the two equal at spacing 9; the gap is derived from
+     * the configured spacing the same way, so a quest written as many one-line
+     * entries looks the same as one written as a single wrapped entry.
+     * {@code paragraph-gap} is extra space on top of that.
      */
     @ModifyArg(
             method = "addWidgets",
@@ -70,7 +90,8 @@ public abstract class ViewQuestPanelMixin {
             require = 0
     )
     private int ftbqls$paragraphGap(int gap) {
-        return SpacingConfig.PARAGRAPH_GAP;
+        int lineGap = SpacingConfig.LINE_SPACING - (Theme.DEFAULT.getFontHeight() - 1);
+        return Math.max(0, lineGap) + SpacingConfig.PARAGRAPH_GAP;
     }
 
     /**
@@ -182,6 +203,10 @@ public abstract class ViewQuestPanelMixin {
      * setText, so the field re-measures at the scaled size. Titles are short and
      * centre-aligned and the panel width adapts to the field width, so scaling
      * keeps the title centred without overflowing.
+     *
+     * <p>The title keeps the vanilla line spacing: {@code line-spacing} is meant for
+     * the subtitle/description body text, and a large value would spread a wrapped
+     * title across a scaled-up band.
      */
     @Redirect(
             method = "addWidgets",
@@ -196,7 +221,7 @@ public abstract class ViewQuestPanelMixin {
         if (SpacingConfig.TITLE_SCALE != 1.0f) {
             field.setScale(SpacingConfig.TITLE_SCALE);
         }
-        return field.setSpacing(SpacingConfig.LINE_SPACING);
+        return field.setSpacing(spacing);
     }
 
     /**
@@ -205,6 +230,10 @@ public abstract class ViewQuestPanelMixin {
      * unscaled font pixels but renders at {@code scale}x, so the wrap width is
      * divided by the scale to keep the rendered text inside the panel, while
      * minWidth is left at the full panel width so the centred text stays centred.
+     *
+     * <p>Like the description, the subtitle opts in to word-level wrapping here so
+     * CJK text doesn't break between syllables. {@link io.github.mockmock69401.ftbqlinespacing.WordWrap}
+     * trims trailing spaces from each line, so centring is unaffected.
      */
     @Redirect(
             method = "addWidgets",
@@ -216,6 +245,9 @@ public abstract class ViewQuestPanelMixin {
             require = 0
     )
     private TextField ftbqls$subtitleSetup(TextField field, int spacing) {
+        if (SpacingConfig.DESC_WORD_WRAP && field instanceof WordWrapTarget target) {
+            target.ftbqls$setWordWrap(true);
+        }
         if (SpacingConfig.SUBTITLE_SCALE != 1.0f) {
             int full = field.maxWidth; // = panel width (minWidth == maxWidth here)
             field.setMinWidth(full);
@@ -243,6 +275,21 @@ public abstract class ViewQuestPanelMixin {
         int padX = SpacingConfig.DESC_PADDING_X;
         int padTop = SpacingConfig.DESC_PADDING_TOP;
         return panel.setPosAndSize(x + padX, y + padTop, Math.max(1, w - padX * 2), h);
+    }
+
+    /**
+     * Rounds the corners of the quest window. This is the first Icon.draw in
+     * drawBackground (ordinal 0) — the whole-window background, which in the
+     * default theme is a hollow 1px border over a tiled texture. The descriptor is
+     * omitted from the selector so no remapped Minecraft type appears in it.
+     */
+    @Redirect(
+            method = "drawBackground",
+            at = @At(value = "INVOKE", ordinal = 0, target = "Ldev/ftb/mods/ftblibrary/icon/Icon;draw"),
+            require = 0
+    )
+    private void ftbqls$roundWindowCorners(Icon icon, GuiGraphics graphics, int x, int y, int w, int h) {
+        RoundedRect.draw(icon, graphics, x, y, w, h, SpacingConfig.WINDOW_CORNER_RADIUS);
     }
 
     /**
