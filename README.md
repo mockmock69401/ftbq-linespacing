@@ -2,6 +2,11 @@
 
 FTB Quests(2001.x) UI 가독성 개선 모드입니다.
 
+
+https://github.com/user-attachments/assets/a3638bdb-35f6-40fe-8133-16b0435d848c
+
+
+
 ## 기능
 1. **퀘스트 설명 행간** — 하드코딩된 setSpacing(9)를 교체 (기본 12), 문단 간격(paragraph-gap)도 별도로 조절 가능
 2. **카드형 챕터 목록** — 챕터마다 테두리 있는 카드, 아이콘 수직 중앙 정렬,
