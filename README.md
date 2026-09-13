@@ -2,6 +2,12 @@
 
 FTB Quests(2001.x) UI 가독성 개선 모드입니다.
 
+
+https://github.com/user-attachments/assets/a3638bdb-35f6-40fe-8133-16b0435d848c
+
+
+<br/>
+
 ## 기능
 1. **퀘스트 설명 행간** — 하드코딩된 setSpacing(9)를 교체 (기본 12), 문단 간격(paragraph-gap)도 별도로 조절 가능
 2. **카드형 챕터 목록** — 챕터마다 테두리 있는 카드, 아이콘 수직 중앙 정렬,
@@ -12,6 +18,7 @@ FTB Quests(2001.x) UI 가독성 개선 모드입니다.
 6. **화살표 들여쓰기** — ◄► 의존성/후속 퀘스트 화살표를 창 가장자리에서 안쪽으로 들여쓰기
 7. **제목 줄 아이콘 x 패딩** — 제목 좌·우 아이콘(퀘스트 아이콘·고정/닫기)을 가장자리에서 안쪽으로 들여쓰기
 8. **창 높이 자동 맞춤 / 최소 높이** — 제목 크기·여백에 맞춰 창 높이를 재계산(스크롤/잘림 방지), 짧은 퀘스트용 최소 높이 지정
+<br/>
 
 ## 설정 (config/ftbq-linespacing.properties, 게임 재시작 필요)
 설정 파일은 **없을 때만** 아래 순서대로 분류와 키별 설명 주석이 달린 기본값으로 생성됩니다.
@@ -41,6 +48,7 @@ FTB Quests(2001.x) UI 가독성 개선 모드입니다.
 | | progress-bar | true | 카드 배경에 은은한 진행률 바 표시 |
 | 챕터 목록: 애니메이션 | transition-ms | 120 | hover/click·슬라이드 애니메이션 시간 ms (0~500, 0 = 즉시 전환/끔) |
 | | card-scale | true | 카드에 hover/click 시 살짝 확대/축소 효과 적용 (transition-ms > 0일 때) |
+<br/>
 
 ## 지원 버전
 | Minecraft | Fabric Loader | FTB Quests (Fabric) | FTB Library (Fabric) | Java |
@@ -49,6 +57,8 @@ FTB Quests(2001.x) UI 가독성 개선 모드입니다.
 | 1.21.1 | 0.16.0+ | 2101.1.35 ~ 2101.1.x | 2101.1.36 ~ 2101.1.x | 21+ |
 
 범위 밖의 FTB 버전에서는 Fabric Loader가 실행 전에 호환되지 않는다고 안내합니다.
+
+<br/>
 
 ## 빌드
 FTB Quests/FTB Library를 컴파일 전용 의존성으로 받아오므로 첫 빌드에는 인터넷 연결이 필요합니다.
@@ -65,6 +75,8 @@ versions\1.21.1\gradlew.bat -p versions\1.21.1 build
 ```
 
 리눅스/맥은 `./gradlew`, `versions/1.21.1/gradlew`를 사용하세요. `-sources`가 붙지 않은 jar가 배포용입니다.
+
+<br/>
 
 ## 호환성 안전장치
 간격·레이아웃 관련 인젝터는 `require = 0`이라 대상 코드가 바뀌어도 크래시 대신 조용히 비활성화됩니다.
