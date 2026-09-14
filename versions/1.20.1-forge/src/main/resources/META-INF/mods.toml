@@ -1,0 +1,44 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/mockmock69401/ftbq-linespacing/issues"
+
+[[mods]]
+modId = "ftbq_linespacing"
+version = "${version}"
+displayName = "Chapter Cards UI with Spacing"
+displayURL = "https://github.com/mockmock69401/ftbq-linespacing"
+authors = "mockmock"
+description = '''
+Unofficial addon for FTB Quests: a card-style chapter list with completion percentages, and adjustable line spacing, text scale and padding in the quest window. Not affiliated with or endorsed by Feed The Beast Ltd. Configurable via config/ftbq-linespacing.properties.
+'''
+# client-only visual tweak: never required on (or checked against) the server
+displayTest = "IGNORE_ALL_VERSION"
+
+[[dependencies.ftbq_linespacing]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.ftbq_linespacing]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,1.20.2)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.ftbq_linespacing]]
+modId = "ftbquests"
+mandatory = true
+versionRange = "[2001.1.4,2001.5.0)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies.ftbq_linespacing]]
+modId = "ftblibrary"
+mandatory = true
+versionRange = "[2001.1.4,2001.3.0)"
+ordering = "AFTER"
+side = "CLIENT"

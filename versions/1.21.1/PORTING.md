@@ -6,7 +6,15 @@ renamed `com.example.ftbqspacing` → `io.github.mockmock69401.ftbqlinespacing`.
 ## Toolchain
 
 - Minecraft 1.21.1, official Mojang mappings (same style as the 1.20.1 root build).
-- Fabric Loader 0.19.5, Fabric API 0.116.1+1.21.1, Architectury API (fabric) 13.0.8.
+- Fabric Loader **0.16.14** (compile only), Fabric API 0.116.1+1.21.1, Architectury API (fabric) 13.0.8.
+  Originally 0.19.5, but that pulls in sponge-mixin 0.17.4, where `@Redirect.at` /
+  `@ModifyArg.at` are declared `At[]` (single `At` up to 0.17.0), so javac stored `at`
+  as an array. MixinExtras 0.5.3 on NeoForge (Sinytra Connector) casts a `@Redirect`'s
+  `at` to one `AnnotationNode` and threw `ClassCastException: ArrayList cannot be cast
+  to AnnotationNode` from `FactoryRedirectWrapperMixinTransformer` the moment the quest
+  screen classes loaded. 0.16.14 (sponge-mixin 0.15.5) emits the conventional single
+  `@At` and matches `fabric.mod.json`'s `fabricloader >=0.16.0` floor. Check the jar
+  manifest's `Fabric-Mixin-Version` after any loader bump.
 - Fabric Loom **1.17.20** — not 1.7.x–1.9.x as originally anticipated. The FTB
   jars published for 1.21.1 today (Sep 2026) were built with a much newer Loom
   and refuse to load under old Loom ("Mod was built with a newer version of
@@ -39,9 +47,14 @@ renamed `com.example.ftbqspacing` → `io.github.mockmock69401.ftbqlinespacing`.
 | Fabric API | — | — | 0.116.1+1.21.1 | needed transitively (FTB classes reference it) |
 | Architectury API (fabric) | — | — | 13.0.8 | needed transitively (FTB uses `dev.architectury.networking.NetworkManager` etc.) |
 
-`fabric.mod.json` pins `ftbquests`/`ftblibrary` to
-`>=<verified version> <next-minor>` (e.g. `>=2101.1.35 <2101.2.0`), per the
-lower bound actually compiled/verified against.
+`fabric.mod.json` bounds `ftbquests`/`ftblibrary` to
+`>=<oldest verified version> <next-minor>`. Originally that floor was the compile
+pin itself (`>=2101.1.35` / `>=2101.1.36`), which made the mod refuse to load on
+packs one release behind (e.g. FTBQ 2101.1.34 + FTB Library 2101.1.35 — a
+"requires … but only the wrong version is present" load error). The floor is now
+`ftbquests >=2100.1.0`, `ftblibrary >=2100.1.0` (first lowered to 2101.1.25 / 2101.1.31,
+then to 2100.1.0 after the user confirmed it in-game); see
+[Range floor verification](#range-floor-verification-ftbq--ftb-library-210010) below.
 
 ## Mixin verification (decompiled FTB Quests 2101.1.35 / FTB Library 2101.1.36, mojmap)
 
@@ -86,6 +99,39 @@ and friends.
 | `ChapterPanel.drawBackground(...)` | matches | matches | No |
 | `WidgetLayout.VERTICAL` field redirect (`ChapterPanelMixin`) | class field | interface field (`WidgetLayout` is now an interface) | No functional change — same `GETSTATIC` shape, `Vertical(int,int,int)` ctor unchanged |
 | `Panel.widgets` field (protected, iterated in `ChapterPanelMixin`) | protected | protected | No |
+
+## Range floor verification (FTBQ + FTB Library 2100.1.0)
+
+The compile pins stay at the latest jars; the `fabric.mod.json` floors were lowered
+after checking every release in between (Fabric jars from
+`https://maven.ftb.dev/releases`, `dev.ftb.mods:ftb-{quests,library}-fabric`):
+
+- **Why these floors.** 2100.1.0 (the first FTB release line for MC 1.21; its
+  `fabric.mod.json` says `minecraft ~1.21`, which includes 1.21.1) is the oldest
+  version confirmed working in-game. FTBQ 2100.1.0 itself requires
+  `ftblibrary >=2100.1.0`, so both floors are the same. This mod doesn't touch FTB
+  Teams.
+- **Bytecode comparison** (`javap -c -p`) of every FTBQ 2100.1.0 … 2101.1.35 and FTB
+  Library 2100.1.0 … 2101.1.36 against the pinned baseline. Differences, all benign:
+  FTBQ ≤2101.1.17 (incl. 2100.x) has two `Icon.draw` in `drawBackground` instead of
+  three (the clock icon came later; ordinals 0/1 unchanged); FTBQ ≤2101.1.18 has a
+  non-`final` `TeamData.getRelativeProgress`; FTB Library 2100.x / 2101.1.0 only
+  declare `Widget` members in another order. Otherwise identical in every
+  version: the ordered `setSpacing` / `WidgetLayout$Vertical.<init>` / `Math.min` /
+  `BlankPanel.setHeight` / `TextField`·`BlankPanel`·`Button.setPosAndSize` invokes
+  in `ViewQuestPanel.addWidgets` (including the two `GotoLinkedQuestButton` /
+  `ViewQuestLinksButton` subtype-owner calls, so the arrow ordinals don't move),
+  the single `setSpacing` in `addDescriptionText`, `Icon.draw` ordinals 0/1 in
+  `drawBackground`, `titleField`/`panelContent`, `WidgetLayout.VERTICAL` in
+  `ChapterPanel.alignWidgets`, the `ChapterButton` / `ChapterGroupButton` /
+  `ListButton` members and ctors, `QuestScreen.file`/`selectedChapter`,
+  `TeamData`/`Chapter`/`ChapterGroup`/`ClientQuestFile`/`ThemeProperties` members,
+  `TextField.setText` → `Theme.listFormattedStringToWidth`, and the
+  `Theme`/`Widget`/`Panel`/`GuiHelper`/`Icon`/`Color4I`/`HollowRectangleIcon`/
+  `CombinedIcon` signatures used here.
+- **Compile check**: a scratch copy of this build with the three FTB deps swapped
+  for FTBQ / FTB Library / FTB Teams 2100.1.0 builds cleanly (earlier also checked
+  at 2101.1.25 / 2101.1.31 / 2101.1.9).
 
 ## Fix list applied
 

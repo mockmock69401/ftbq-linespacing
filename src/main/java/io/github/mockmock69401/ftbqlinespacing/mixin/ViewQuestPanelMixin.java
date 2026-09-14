@@ -280,12 +280,14 @@ public abstract class ViewQuestPanelMixin {
     /**
      * Rounds the corners of the quest window. This is the first Icon.draw in
      * drawBackground (ordinal 0) — the whole-window background, which in the
-     * default theme is a hollow 1px border over a tiled texture. The descriptor is
-     * omitted from the selector so no remapped Minecraft type appears in it.
+     * default theme is a hollow 1px border over a tiled texture. The target needs a
+     * full descriptor (Sinytra Connector crashes on name-only {@code @Redirect}
+     * targets); it names GuiGraphics, so the {@code @At} opts in to remapping.
      */
     @Redirect(
             method = "drawBackground",
-            at = @At(value = "INVOKE", ordinal = 0, target = "Ldev/ftb/mods/ftblibrary/icon/Icon;draw"),
+            at = @At(value = "INVOKE", ordinal = 0, remap = true,
+                    target = "Ldev/ftb/mods/ftblibrary/icon/Icon;draw(Lnet/minecraft/client/gui/GuiGraphics;IIII)V"),
             require = 0
     )
     private void ftbqls$roundWindowCorners(Icon icon, GuiGraphics graphics, int x, int y, int w, int h) {
@@ -296,12 +298,13 @@ public abstract class ViewQuestPanelMixin {
      * Vertically centres the quest icon against the title. drawBackground draws it
      * top-aligned at a fixed {@code y + 4}, which drifts out of alignment once the
      * title is scaled or given vertical padding. This is the second Icon.draw in
-     * the method (ordinal 1); the first draws the panel background. The descriptor
-     * is omitted from the selector so no remapped Minecraft type appears in it.
+     * the method (ordinal 1); the first draws the panel background. Full descriptor
+     * with a remapped {@code @At}, as in {@link #ftbqls$roundWindowCorners}.
      */
     @Redirect(
             method = "drawBackground",
-            at = @At(value = "INVOKE", ordinal = 1, target = "Ldev/ftb/mods/ftblibrary/icon/Icon;draw"),
+            at = @At(value = "INVOKE", ordinal = 1, remap = true,
+                    target = "Ldev/ftb/mods/ftblibrary/icon/Icon;draw(Lnet/minecraft/client/gui/GuiGraphics;IIII)V"),
             require = 0
     )
     private void ftbqls$centerTitleIcon(Icon icon, GuiGraphics graphics, int x, int y, int w, int h) {

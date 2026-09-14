@@ -1,6 +1,6 @@
 package io.github.mockmock69401.ftbqlinespacing;
 
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,7 +102,7 @@ public final class SpacingConfig {
     static {
         Properties props = new Properties();
         try {
-            Path file = FabricLoader.getInstance().getConfigDir().resolve("ftbq-linespacing.properties");
+            Path file = configDir().resolve("ftbq-linespacing.properties");
             if (Files.exists(file)) {
                 try (InputStream in = Files.newInputStream(file)) {
                     props.load(in);
@@ -251,6 +251,19 @@ public final class SpacingConfig {
 
     private static void comment(StringBuilder sb, String line) {
         sb.append(line.isEmpty() ? "#" : "# " + line).append(NL);
+    }
+
+    /**
+     * {@code <game dir>/config}, which is what both Fabric's
+     * {@code FabricLoader.getConfigDir()} and Forge's {@code FMLPaths.CONFIGDIR}
+     * resolve to. Read from Minecraft instead so this class stays loader-agnostic —
+     * the sources are shared by the Fabric and Forge builds. The config is first
+     * touched from quest GUI code, long after Minecraft exists; the relative
+     * fallback only guards an unexpectedly early access.
+     */
+    private static Path configDir() {
+        Minecraft mc = Minecraft.getInstance();
+        return mc != null ? mc.gameDirectory.toPath().resolve("config") : Path.of("config");
     }
 
     private static int parseInt(Properties p, String key, int fallback) {

@@ -21,8 +21,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Animated group headers: hover highlight and text color fade in/out,
  * and the collapse arrow rotates smoothly between collapsed (right)
  * and expanded (down) states.
+ *
+ * <p>{@code priority = 900} so this HEAD cancel runs before other add-ons' — see
+ * {@link ChapterButtonMixin}.
  */
-@Mixin(value = ChapterPanel.ChapterGroupButton.class, remap = false)
+@Mixin(value = ChapterPanel.ChapterGroupButton.class, remap = false, priority = 900)
 public abstract class ChapterGroupButtonMixin extends ChapterPanel.ListButton {
 
     @Unique

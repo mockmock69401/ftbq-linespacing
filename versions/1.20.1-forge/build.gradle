@@ -1,0 +1,68 @@
+plugins {
+    id 'dev.architectury.loom' version '1.7.435'
+    id 'java'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    maven { url = "https://maven.architectury.dev/" }
+    maven { url = "https://maven.ftb.dev/releases" }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    forge "net.minecraftforge:forge:${project.forge_version}"
+
+    // Compile-time only: needed so mixins can reference FTB Quests / FTB Library classes.
+    // Forge builds of the same FTB releases the Fabric 1.20.1 build pins; their mixin
+    // targets were bytecode-compared identical to the Fabric jars. Not bundled.
+    modCompileOnly "dev.architectury:architectury-forge:9.2.14"
+    modCompileOnly("dev.ftb.mods:ftb-library-forge:2001.2.11") { transitive = false }
+    modCompileOnly("dev.ftb.mods:ftb-teams-forge:2001.3.2") { transitive = false }
+    modCompileOnly("dev.ftb.mods:ftb-quests-forge:2001.4.22") { transitive = false }
+}
+
+// Java sources are shared with the Fabric builds (repo root), which contain no loader
+// API; only the @Mod entry point under src/main/java here is Forge-specific.
+// Resources (mods.toml, pack.mcmeta, mixins.json) live under this directory.
+sourceSets {
+    main {
+        java {
+            srcDirs = [file("../../src/main/java"), file("src/main/java")]
+        }
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 17
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
+}
+
+loom {
+    forge {
+        // writes MixinConfigs into the jar manifest so Forge's Mixin service loads it
+        mixinConfig "ftbq_linespacing.mixins.json"
+    }
+    mixin {
+        defaultRefmapName = "ftbq_linespacing.refmap.json"
+    }
+}

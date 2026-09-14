@@ -27,8 +27,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * Turns each chapter entry in the sidebar into a card:
  * bordered box, vertically-centered icon, title + completion percentage,
  * gold accent for the selected chapter.
+ *
+ * <p>{@code priority = 900}: other FTBQ add-ons also cancel {@code draw} from a HEAD
+ * inject (Certain Questing Additions' hover style does). HEAD callbacks run in mixin
+ * application order and lower priorities apply first, so this card renderer gets the
+ * first say — and when {@code chapter-cards=false} it returns without cancelling,
+ * leaving the other mod's rendering intact.
  */
-@Mixin(value = ChapterPanel.ChapterButton.class, remap = false)
+@Mixin(value = ChapterPanel.ChapterButton.class, remap = false, priority = 900)
 public abstract class ChapterButtonMixin extends ChapterPanel.ListButton {
 
     @Shadow

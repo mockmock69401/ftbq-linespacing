@@ -22,9 +22,11 @@ import java.util.List;
  * {@code ViewQuestPanelMixin}, for the quest subtitle and description fields — the call is
  * redirected to {@link WordWrap} instead, which breaks at spaces only.
  *
- * <p>The redirect targets the splitter call by name without a descriptor: the
- * descriptor mentions a Minecraft type, which would not be remapped under
- * {@code remap = false}.
+ * <p>The target carries a full descriptor — Sinytra Connector's mixin adapter parses
+ * every {@code @Redirect} INVOKE descriptor and crashes on a name-only target. The
+ * descriptor mentions a Minecraft type, so the {@code @At} alone opts back in to
+ * remapping ({@code remap = true}) and the refmap carries the production name; the
+ * mixin and {@code method} stay {@code remap = false}.
  *
  * <p>{@code method = "setText"} matches both overloads; the {@code String} one just
  * delegates and has no splitter call, hence {@code require = 0}.
@@ -44,7 +46,8 @@ public abstract class TextFieldMixin implements WordWrapTarget {
             method = "setText",
             at = @At(
                     value = "INVOKE",
-                    target = "Ldev/ftb/mods/ftblibrary/ui/Theme;listFormattedStringToWidth"
+                    target = "Ldev/ftb/mods/ftblibrary/ui/Theme;listFormattedStringToWidth(Lnet/minecraft/network/chat/FormattedText;I)Ljava/util/List;",
+                    remap = true
             ),
             require = 0
     )

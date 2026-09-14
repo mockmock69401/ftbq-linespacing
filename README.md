@@ -51,34 +51,40 @@ https://github.com/user-attachments/assets/a3638bdb-35f6-40fe-8133-16b0435d848c
 <br/>
 
 ## 지원 버전
-| Minecraft | Fabric Loader | FTB Quests (Fabric) | FTB Library (Fabric) | Java |
+| Minecraft | 로더 | FTB Quests | FTB Library | Java |
 |---|---|---|---|---|
-| 1.20.1 | 0.14.21+ | 2001.4.14 ~ 2001.4.x | 2001.2.9 ~ 2001.2.x | 17+ |
-| 1.21.1 | 0.16.0+ | 2101.1.35 ~ 2101.1.x | 2101.1.36 ~ 2101.1.x | 21+ |
+| 1.20.1 | Fabric Loader 0.14.21+ | 2001.1.4 ~ 2001.4.x | 2001.1.4 ~ 2001.2.x | 17+ |
+| 1.20.1 | Forge 47+ | 2001.1.4 ~ 2001.4.x | 2001.1.4 ~ 2001.2.x | 17+ |
+| 1.21.1 | Fabric Loader 0.16.0+ | 2100.1.0 ~ 2101.1.x | 2100.1.0 ~ 2101.1.x | 21+ |
 
-범위 밖의 FTB 버전에서는 Fabric Loader가 실행 전에 호환되지 않는다고 안내합니다.
+범위 밖의 FTB 버전에서는 로더가 실행 전에 호환되지 않는다고 안내합니다.
+Forge 팩에는 Forge용 jar(`ftbq-linespacing-forge-…`)를 넣으세요 — Forge는 Fabric jar를 오류 없이 무시합니다.
 
 <br/>
 
 ## 빌드
 FTB Quests/FTB Library를 컴파일 전용 의존성으로 받아오므로 첫 빌드에는 인터넷 연결이 필요합니다.
-Java 소스는 두 버전이 공유하고, `fabric.mod.json` 등 리소스만 버전별로 따로 있습니다.
+Java 소스는 모든 빌드가 공유하고, `fabric.mod.json`/`mods.toml` 등 리소스만 빌드별로 따로 있습니다.
 
 ```
-# 1.20.1 (JDK 17)
+# 1.20.1 Fabric (JDK 17)
 gradlew.bat build
-# → build/libs/ftbq-linespacing-1.0.0+1.20.1.jar
+# → build/libs/ftbq-linespacing-1.0.0.jar
 
-# 1.21.1 (JDK 21, 없으면 Gradle이 자동으로 받음)
+# 1.21.1 Fabric (JDK 21, 없으면 Gradle이 자동으로 받음)
 versions\1.21.1\gradlew.bat -p versions\1.21.1 build
 # → versions/1.21.1/build/libs/ftbq-linespacing-1.0.0+1.21.1.jar
+
+# 1.20.1 Forge (JDK 17, 첫 빌드는 Forge 설정 때문에 몇 분 걸림)
+versions\1.20.1-forge\gradlew.bat -p versions\1.20.1-forge build
+# → versions/1.20.1-forge/build/libs/ftbq-linespacing-forge-1.0.0+1.20.1.jar
 ```
 
-리눅스/맥은 `./gradlew`, `versions/1.21.1/gradlew`를 사용하세요. `-sources`가 붙지 않은 jar가 배포용입니다.
+리눅스/맥은 `./gradlew`, `versions/<빌드>/gradlew`를 사용하세요. `-sources`가 붙지 않은 jar가 배포용입니다.
 
 <br/>
 
 ## 호환성 안전장치
 간격·레이아웃 관련 인젝터는 `require = 0`이라 대상 코드가 바뀌어도 크래시 대신 조용히 비활성화됩니다.
 챕터 카드 렌더링 인젝터와 `@Accessor`는 대상이 없으면 로드 시점에 실패하므로(설정 파일보다 먼저 적용되어
-`chapter-cards=false`로도 막을 수 없음), `fabric.mod.json`의 FTB 버전 범위로 검증된 버전에서만 로드되도록 제한합니다.
+`chapter-cards=false`로도 막을 수 없음), `fabric.mod.json`/`mods.toml`의 FTB 버전 범위로 검증된 버전에서만 로드되도록 제한합니다.
