@@ -1,4 +1,6 @@
-# FTB Quests Line Spacing & Chapter Cards (Fabric)
+# FTB Quests Line Spacing & Chapter Cards (Fabric/Forge)
+
+**한국어** | [English](README.en.md)
 
 
 FTB Quests(2001.x / 2101.x)의 UI 가독성을 개선하는 비공식 애드온입니다.
