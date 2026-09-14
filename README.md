@@ -1,7 +1,6 @@
-# Chapter Cards UI with Spacing (Fabric, MC 1.20.1 / 1.21.1)
+# FTB Quests Line Spacing & Chapter Cards (Fabric)
 
-FTB Quests(2001.x / 2101.x)의 UI 가독성을 개선하는 비공식 애드온입니다.
-Feed The Beast Ltd와 제휴하거나 승인받은 모드가 아닙니다.
+FTB Quests(2001.x) UI 가독성 개선 모드입니다.
 
 
 https://github.com/user-attachments/assets/a3638bdb-35f6-40fe-8133-16b0435d848c
@@ -68,7 +67,7 @@ Java 소스는 두 버전이 공유하고, `fabric.mod.json` 등 리소스만 �
 ```
 # 1.20.1 (JDK 17)
 gradlew.bat build
-# → build/libs/ftbq-linespacing-1.0.0.jar
+# → build/libs/ftbq-linespacing-1.0.0+1.20.1.jar
 
 # 1.21.1 (JDK 21, 없으면 Gradle이 자동으로 받음)
 versions\1.21.1\gradlew.bat -p versions\1.21.1 build
