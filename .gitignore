@@ -6,8 +6,9 @@ build/
 run/
 remappedSrc/
 
-# OMC agent state
+# AI agent state
 .omc/
+CLAUDE.md
 
 # IDE
 .idea/

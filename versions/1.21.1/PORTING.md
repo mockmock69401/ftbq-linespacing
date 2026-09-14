@@ -121,7 +121,7 @@ and friends.
 - **(e)** Package renamed to `io.github.mockmock69401.ftbqlinespacing`
   (files + `package`/`import` statements + `mixins.json` `"package"`).
   `gradle.properties`: `maven_group=io.github.mockmock69401`,
-  `mod_version=1.0.0+1.21.1`, `archives_base_name=ftbq-linespacing` (mod id
+  `mod_version=1.0.0+1.21.1`, `archives_base_name=chapter-cards-ui-with-spacing` (renamed later to match the display name; mod id
   `ftbq_linespacing` unchanged).
 - **(f)** `fabric.mod.json`: `environment: client`, `minecraft: "1.21.1"`,
   `java: ">=21"`, `authors: ["mockmock"]`, `contact` block, `ftbquests`/
@@ -148,7 +148,7 @@ changes beyond the fix list above.
 versions\1.21.1\gradlew.bat -p versions\1.21.1 clean build   # (own wrapper, Gradle 9.7.1)
 ```
 
-`BUILD SUCCESSFUL`. Inspected `build/libs/ftbq-linespacing-1.0.0+1.21.1.jar`:
+`BUILD SUCCESSFUL`. Inspected `build/libs/`:
 
 - Only `io/github/mockmock69401/ftbqlinespacing/**` classes are bundled — no
   FTB/Minecraft classes leaked in.

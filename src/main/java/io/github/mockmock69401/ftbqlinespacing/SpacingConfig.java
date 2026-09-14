@@ -76,7 +76,7 @@ public final class SpacingConfig {
 
     private static final int D_LINE_SPACING = 12;
     private static final int D_PARAGRAPH_GAP = 0;
-    private static final float D_TITLE_SCALE = 1.45f;
+    private static final float D_TITLE_SCALE = 1.35f;
     private static final float D_SUBTITLE_SCALE = 1.0f;
     private static final int D_TITLE_PADDING_Y = 8;
     private static final int D_DESC_PADDING_X = 8;
@@ -167,7 +167,7 @@ public final class SpacingConfig {
      */
     private static String defaultFileContents() {
         StringBuilder sb = new StringBuilder();
-        comment(sb, "FTB Quests Line Spacing - client config");
+        comment(sb, "Chapter Cards UI with Spacing - client config");
         comment(sb, "");
         comment(sb, "This file is only generated when it does not exist. Delete it to restore the");
         comment(sb, "defaults and to pick up options added by newer versions of the mod.");
