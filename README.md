@@ -55,10 +55,11 @@ https://github.com/user-attachments/assets/a3638bdb-35f6-40fe-8133-16b0435d848c
 <br/>
 
 ## 지원 버전
-| Minecraft | Fabric Loader | FTB Quests (Fabric) | FTB Library (Fabric) | Java |
+| Minecraft | Loader | FTB Quests | FTB Library | Java |
 |---|---|---|---|---|
-| 1.20.1 | 0.14.21+ | 2001.4.14 ~ 2001.4.x | 2001.2.9 ~ 2001.2.x | 17+ |
-| 1.21.1 | 0.16.0+ | 2101.1.35 ~ 2101.1.x | 2101.1.36 ~ 2101.1.x | 21+ |
+| 1.20.1 | Fabric Loader 0.14.21+ | 2001.1.4 – 2001.4.x | 2001.1.4 – 2001.2.x | 17+ |
+| 1.20.1 | Forge 47+ | 2001.1.4 – 2001.4.x | 2001.1.4 – 2001.2.x | 17+ |
+| 1.21.1 | Fabric Loader 0.16.0+ | 2100.1.0 – 2101.1.x | 2100.1.0 – 2101.1.x | 21+ |
 
 범위 밖의 FTB 버전에서는 Fabric Loader가 실행 전에 호환되지 않는다고 안내합니다.
 
